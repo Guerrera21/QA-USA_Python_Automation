@@ -1,5 +1,11 @@
+from selenium import webdriver
+from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.devtools.v141.fed_cm import click_dialog_button
+
 import data
 import helpers
+from pages import UrbanRoutesPage
+
 
 class TestUrbanRoutes:
     @classmethod
@@ -10,34 +16,53 @@ class TestUrbanRoutes:
         else:
             print("Cannot connect to Urban Routes. Check the server is still on and still running.")
 
-    def test_set_route(self):
-        # Add in s8
-        print("function created for set route")
-        pass
-    def test_select_plan(self):
-        # Add in s8
-        print("function created for select plan")
-        pass
-    def test_fill_phone_number(self):
-        # Add in s8
-        print("function created for fill phone number")
-        pass
-    def test_fill_card(self):
-        # Add in s8
-        print("function created for fill card")
-        pass
-    def test_comment_for_driver(self):
-        # Add s8
-        print("function created for comment for driver")
-        pass
-    def test_order_2_ice_cream(self):
-        # Looping twice for ordering 2 ice creams
-        for _ in range (2):
-            # Add in s8
-            pass
-    def test_car_search_model_appears(self):
-        # Add in s8
-        print("function created for car search model")
-        pass
+        # do not modify - we need additional logging enabled in order to retrieve phone confirmation code
+        capabilities = DesiredCapabilities.CHROME
+        capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
+        cls.driver = webdriver.Chrome(desired_capabilities=capabilities)
 
-    print('test1')
+    @classmethod
+    def test_set_route(self):
+        self.driver.get(data.URBAN_ROUTES_URL)
+        page = UrbanRoutesPage(self.driver)
+        page.enter_from(data.ADDRESS_FROM)
+        page.enter_to(data.ADDRESS_TO)
+
+    def test_select_plan(self):
+        self.driver.get(data.URBAN_ROUTES_URL)
+        page = UrbanRoutesPage(self.driver)
+        page.click_call_a_taxi(data.CALL_A_TAXI)
+        page.click_supportive_button(data.SUPPORTIVE_BUTTON)
+
+    def test_fill_phone_number(self):
+        self.driver.get(data.URBAN_ROUTES_URL)
+        page = UrbanRoutesPage(self.driver)
+        page.enter_phone_number(data.PHONE_NUMBER)
+
+    def test_fill_card(self):
+        self.driver.get(data.URBAN_ROUTES_URL)
+        page = UrbanRoutesPage(self.driver)
+        page.test_fill_card(
+            data.CARD_NUMBER,
+            data.CARD_CODE
+        )
+
+    def test_comment_for_driver(self):
+        self.driver.get(data.URBAN_ROUTES_URL)
+        page = UrbanRoutesPage(self.driver)
+        page.comment_for_driver(data.COMMENT)
+
+    def test_order_blanket_handkerchiefs(self):
+       self.driver.get(data.URBAN_ROUTES_URL)
+       page = UrbanRoutesPage(self.driver)
+       page.order_blanket_handkerchiefs(data.order_blanket_handerkerchiefs)
+
+    def test_order_2_ice_cream(self):
+        self.driver.get(data.URBAN_ROUTES_URL)
+        page = UrbanRoutesPage(self.driver)
+        page.order_2_ice_creams(data.ORDER_2_ICE_CREAMS)
+
+    def test_car_search_modal_appears(self):
+        self.driver.get(data.URBAN_ROUTES_URL)
+        page = UrbanRoutesPage(self.driver)
+        page.test_car_search_modal_appears(data.car_search_modal_appears)
