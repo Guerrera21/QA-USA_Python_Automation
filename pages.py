@@ -13,11 +13,15 @@ class UrbanRoutesPage:
     TO_FIELD = (By.ID, "to")
     CALL_A_TAXI = (By.XPATH, '//button[text()="Call a taxi"]')
     SUPPORTIVE_BUTTON = (By.XPATH, '//img[@alt="Supportive"]')
+    ACTIVE_PLAN = (By.CSS_SELECTOR, '.tcard.active .tcard-title')
     ENTER_PHONE_NUMBER = (By.XPATH, '//div[text()="Phone number"]')
-    CASH_PAYMENT = (By.XPATH, '//div[text()="Cash"]')
+    CLICK_NEXT_BUTTON = (By.XPATH, '//button[text()='Next'])
+    RETRIEVE_PHONE_CODE = (BY.XPATH '//input[@id='code']')
+    CLICK_CONFIRM_BUTTON = (BY.CSS_Selector, 'css=button[type='submit']')
+    CARD_OPTION = (By.CSS_SELECTOR, "label[for='card-1']")
     FILL_CARD = (By.XPATH, '//div[text()="Add card"]')
     COMMENT_TO_DRIVER = (By.XPATH, '//label[text()="Message to the driver..."]')
-    ORDER_ICE_CREAM = (By.XPATH, '//div[text()="Ice cream"]')
+    ORDER_ICE_CREAM = (By.XPATH, '//div[text()='2']')
     CAR_SEARCH_MODAL = (By.XPATH, '//span[text()="The route will be 1 km. and will take 2 min."]')
 
     def enter_from(self, address):
@@ -34,10 +38,15 @@ class UrbanRoutesPage:
 
     def enter_phone_number(self, phone_number):
         self.driver.find_element(*self.ENTER_PHONE_NUMBER).send_keys(phone_number)
+        self.driver.find_element(*self.CLICK_NEXT_BUTTON).click()
+        self.driver.find_element(*self.retrieve_phone_code).click()
+        self.driver.find_element(*self.ENTER_SMS_CODE).send_keys()
+        self.driver.find_element(*self.CLICK_CONFIRM_BUTON).click()
 
     def test_fill_card(self):
+        self.driver.find_element(*self.CARD_OPTION).click()
         self.driver.find_element(*self.CARD_NUMBER).send_keys()
-        self.driver.find_element(*self.CARD_CARD).send_keys()
+        self.driver.find_element(*self.CARD_CODE).send_keys()
 
     def cash_payment(self, amount):
         self.driver.find_element(*self.CASH_PAYMENT).click()
@@ -53,3 +62,12 @@ class UrbanRoutesPage:
 
     def test_car_search_modal_appears(self):
         self.driver.find_element(*self.test_car_search_modal_appears)
+
+    def get_from(self):
+        return self.driver.find_element(*self.FROM_FIELD).get_attribute("value")
+    def get_to(self):
+        return self.driver.find_element(*self.TO_FIELD).get_attribute("value")
+
+    def get_active_plan(self):
+        return self.driver.find_element(*self.ACTIVE_PLAN).text
+
