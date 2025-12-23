@@ -1,5 +1,3 @@
-from telnetlib import EC
-
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.by import By
@@ -50,18 +48,11 @@ class TestUrbanRoutes:
         page.enter_from(data.ADDRESS_FROM)
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
-        # click the phone number button
-        page.enter_phone_number(data.PHONE_NUMBER)
-        # click the next button
-        page.CLICK_NEXT_BUTTON()
-        # retrieve and save the sms code
-        page.get_sms_code()
-        # input the sms code
-        page.enter_sms_code('sms_code')
-        # click the confirm button
+        page.enter_phone_number()
+        page.click_next_button()
+        page.write_code(helpers.retrieve_phone_code(self.driver))
         page.CLICK_CONFIRM_BUTTON()
-        # assert the saved phone number matches the one we input
-        assert page.get_phone_number() == data.PHONE_NUMBER
+        assert page.get_PHONE_NUMBER()== data.PHONE_NUMBER
 
     def test_fill_card(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -82,8 +73,7 @@ class TestUrbanRoutes:
         EC.element_to_be_clickable((By.XPATH, "//button[text()='Link']"))
         )
         link_button.click()
-        assert page.test_fill_card()=="FILL_CARD"
-
+        assert page.FILL_CARD() == "CARD"
 
     def test_comment_for_driver(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -92,8 +82,8 @@ class TestUrbanRoutes:
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
         page.click_supportive_button()
-        page.enter_comment_for_driver("stop at the juice bar, please")
-        assert page.comment_for_driver()
+        page.COMMENT_TO_DRIVER("stop at the juice bar, please")
+        assert page.get_comment_to_driver() == 'message'
 
     def test_order_blanket_handkerchiefs(self):
        self.driver.get(data.URBAN_ROUTES_URL)
@@ -103,7 +93,7 @@ class TestUrbanRoutes:
        page.click_call_a_taxi()
        page.click_supportive_button()
        page.order_blanket_handerkerchiefs()
-        assert page.get_order_blanket_handerkerchiefs()
+       assert page.get_blanket_handerkerchiefs()
 
     def test_order_2_ice_cream(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -112,8 +102,7 @@ class TestUrbanRoutes:
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
         page.click_supportive_button()
-        assert page.order_2_ice_cream() == 'ORDER_2_ICE_CREAM'
-
+        assert page.get_order_2_ice_cream()=='order 2 ice cream'
 
     def test_car_search_modal_appears(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -122,8 +111,8 @@ class TestUrbanRoutes:
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
         page.click_supportive_button()
-        page.test_car_search_modal_appears() 'car_search_modal_appears'
-        assert page.is_displayed()
+        page.car_search_modal()
+        assert page.get_car_search_modal().is_displayed()
 
     @classmethod
     def teardown_class(cls):
