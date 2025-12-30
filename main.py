@@ -1,3 +1,5 @@
+import time
+
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.by import By
@@ -6,6 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 import data
 import helpers
+from data import CARD_NUMBER
 from pages import UrbanRoutesPage
 
 
@@ -41,18 +44,17 @@ class TestUrbanRoutes:
         page.click_supportive_button()
         assert page.get_active_plan()=="Supportive"
 
-
     def test_fill_phone_number(self):
         self.driver.get(data.URBAN_ROUTES_URL)
         page = UrbanRoutesPage(self.driver)
         page.enter_from(data.ADDRESS_FROM)
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
-        page.enter_phone_number()
+        page.enter_phone_number(data.PHONE_NUMBER)
         page.click_next_button()
         page.write_code(helpers.retrieve_phone_code(self.driver))
-        page.CLICK_CONFIRM_BUTTON()
-        assert page.get_PHONE_NUMBER()== data.PHONE_NUMBER
+        page.click_confirm_button()
+        assert page.get_phone_number()== data.PHONE_NUMBER
 
     def test_fill_card(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -60,30 +62,21 @@ class TestUrbanRoutes:
         page.enter_from(data.ADDRESS_FROM)
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
-        # 1. Select the 'Card' option
-        card_option = self.driver.find_element(By.CSS_SELECTOR, "label[for='card-1']")
-        card_option.click()
-        # 2. Fill in the 'Add Card' form (if visible)
-        card_num_field = self.driver.find_element(By.ID, "number")
-        card_num_field.send_keys("1234567812345678")
-        cvc_field = self.driver.find_element(By.ID, "code")
-        cvc_field.send_keys("123")
-        # 3. Wait for the Link button to be enabled, then click
-        link_button = WebDriverWait(self.driver, 10).until(
-        EC.element_to_be_clickable((By.XPATH, "//button[text()='Link']"))
-        )
-        link_button.click()
-        assert page.FILL_CARD() == "CARD"
+        page.click_supportive_button()
+        page.payment_method()
+        page.add_card()
+        page.fill_card(data.CARD_NUMBER, data.CARD_CODE)
+        page.link_button()
+        assert page.get_fill_card() == 'Card'
 
-    def test_comment_for_driver(self):
+    def test_comment_to_driver(self):
         self.driver.get(data.URBAN_ROUTES_URL)
         page = UrbanRoutesPage(self.driver)
         page.enter_from(data.ADDRESS_FROM)
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
-        page.click_supportive_button()
-        page.COMMENT_TO_DRIVER("stop at the juice bar, please")
-        assert page.get_comment_to_driver() == 'message'
+        page.comment_to_driver(data.MESSAGE_FOR_DRIVER)
+        assert page.get_comment_to_driver()== data.MESSAGE_FOR_DRIVER
 
     def test_order_blanket_handkerchiefs(self):
        self.driver.get(data.URBAN_ROUTES_URL)
@@ -92,8 +85,8 @@ class TestUrbanRoutes:
        page.enter_to(data.ADDRESS_TO)
        page.click_call_a_taxi()
        page.click_supportive_button()
-       page.order_blanket_handerkerchiefs()
-       assert page.get_blanket_handerkerchiefs()
+       page.blanket_handkerchiefs()
+       assert page.get_blanket_checkbox()
 
     def test_order_2_ice_cream(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -102,7 +95,8 @@ class TestUrbanRoutes:
         page.enter_to(data.ADDRESS_TO)
         page.click_call_a_taxi()
         page.click_supportive_button()
-        assert page.get_order_2_ice_cream()=='order 2 ice cream'
+        page.order_2_ice_cream()
+        assert page.get_2_ice_cream() == '2'
 
     def test_car_search_modal_appears(self):
         self.driver.get(data.URBAN_ROUTES_URL)
@@ -112,7 +106,7 @@ class TestUrbanRoutes:
         page.click_call_a_taxi()
         page.click_supportive_button()
         page.car_search_modal()
-        assert page.get_car_search_modal().is_displayed()
+        assert page.get_modal().is_displayed()
 
     @classmethod
     def teardown_class(cls):
